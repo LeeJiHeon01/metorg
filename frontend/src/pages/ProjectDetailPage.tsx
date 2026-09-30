@@ -475,7 +475,7 @@ export default function ProjectDetailPage() {
         <div className="task-side">
           {node.dueDate && (
             <span className={`due-tag ${dueClass(node.dueDate, node.status)}`} title="마감일">
-              📅 {node.dueDate.slice(5)}
+              📅 마감일 : {node.dueDate.slice(5)}
             </span>
           )}
           <select
