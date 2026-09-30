@@ -300,7 +300,7 @@ export default function ProjectDetailPage() {
   }
 
   async function removeTask(t: Task) {
-    if (!confirm(`'${t.title}' 작업을 삭제할까요? 하위 작업은 유지됩니다.`)) return
+    if (!confirm(`'${t.title}' 작업을 삭제할까요? 하위 작업도 함께 삭제됩니다.`)) return
     try {
       await api.deleteTask(t.id)
       await reloadTasks()

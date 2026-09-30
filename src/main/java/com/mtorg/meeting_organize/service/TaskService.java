@@ -87,11 +87,18 @@ public class TaskService {
         return t;
     }
 
-    /** 소프트 삭제 (deleted_yn = 'Y') */
+    /** 소프트 삭제 (deleted_yn = 'Y') — 하위 작업까지 재귀적으로 함께 삭제 */
     @Transactional
     public void delete(Long id) {
         Task t = get(id);
+        softDeleteRecursive(t);
+    }
+
+    private void softDeleteRecursive(Task t) {
         t.setDeletedYn("Y");
+        for (Task child : taskRepository.findByParentTaskIdAndDeletedYn(t.getId(), "N")) {
+            softDeleteRecursive(child);
+        }
     }
 
     /** 여러 작업에 담당자 일괄 지정 (assigneeId=null 이면 담당 해제) */
