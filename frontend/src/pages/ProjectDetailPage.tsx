@@ -527,7 +527,7 @@ export default function ProjectDetailPage() {
           </button>
           {admin && (
             <button className="btn btn-outline-danger" onClick={() => setDeleteConfirm(true)}>
-              🗑 프로젝트 삭제
+              🗑 삭제
             </button>
           )}
         </div>
