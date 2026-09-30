@@ -947,7 +947,7 @@ export default function ProjectDetailPage() {
               {editLogo ? (
                 <img className="logo-preview" src={editLogo} alt="" />
               ) : (
-                <div className="logo-preview empty">＋</div>
+                <div className="logo-preview empty">+</div>
               )}
               <div className="row" style={{ gap: 8 }}>
                 <label className="btn btn-soft btn-sm" style={{ cursor: 'pointer' }}>
