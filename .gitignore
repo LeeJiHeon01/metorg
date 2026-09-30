@@ -44,3 +44,7 @@ frontend/dist/
 *.log
 boot.log
 
+
+# 로컬 문서(깃 제외)
+프로젝트_소개.md
+sample_meeting.md
