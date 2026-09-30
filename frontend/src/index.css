@@ -326,8 +326,8 @@ a { color: inherit; text-decoration: none; }
 
 /* ===================== Modal ===================== */
 .overlay { position: fixed; inset: 0; background: rgba(16, 18, 30, 0.55); backdrop-filter: blur(4px); display: grid; place-items: center; z-index: 100; padding: 20px; animation: fade 0.16s ease; }
-.modal { background: var(--surface); border-radius: 22px; width: 100%; max-width: 460px; box-shadow: var(--shadow-lg); animation: pop 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
-.modal-lg { max-width: 620px; }
+.modal { background: var(--surface); border-radius: 22px; width: 100%; max-width: 520px; box-shadow: var(--shadow-lg); animation: pop 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
+.modal-lg { max-width: 680px; }
 .modal-head { padding: 24px 26px 4px; }
 .modal-h { font-size: 19px; font-weight: 800; letter-spacing: -0.02em; }
 .modal-p { font-size: 13px; color: var(--text-2); margin-top: 4px; }

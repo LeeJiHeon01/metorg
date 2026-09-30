@@ -28,7 +28,7 @@ export default function ConfirmModal({
 
   return (
     <div className="overlay" onClick={onClose}>
-      <div className="modal" style={{ maxWidth: 400 }} onClick={(e) => e.stopPropagation()}>
+      <div className="modal" style={{ maxWidth: 460 }} onClick={(e) => e.stopPropagation()}>
         <div className="confirm-body">
           <div className={`confirm-icon tone-${tone}`}>{icon}</div>
           <div className="confirm-title">{title}</div>
