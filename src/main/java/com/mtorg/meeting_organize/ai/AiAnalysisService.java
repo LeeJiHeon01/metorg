@@ -45,13 +45,24 @@ public class AiAnalysisService {
             """;
 
     private static final String CHANGE_SYSTEM = """
-            You compare the current task list with a new change request and decide the edits.
-            Output ONLY one compact JSON object, no markdown, no comments, no explanation.
-            The object MUST have EXACTLY ONE key "changes" whose value is an array of all edits.
-            Never output the "changes" key more than once.
-            Each edit: {"type":"ADD|UPDATE|REMOVE","taskId":int?,"parentTaskId":int?,"title":str,"before":str?,"after":str?,"description":str?}.
-            Use taskId from CURRENT_TASKS for UPDATE/REMOVE. Keep Korean text in Korean.
-            Example: {"changes":[{"type":"UPDATE","taskId":12,"before":"1개월","after":"3개월"}]}
+            You compare CURRENT_TASKS with a new change request and decide the MINIMAL edits.
+
+            DECISION RULES (very important):
+            - If the request changes, refines, or OVERLAPS an existing task, use UPDATE with that task's taskId.
+              Do NOT create a duplicate. Prefer UPDATE over ADD whenever a related task already exists.
+            - Use ADD only for a genuinely NEW item that has no matching existing task.
+              A new item MUST be TOP-LEVEL: set parentTaskId to null.
+              Do NOT nest it under another task (no 하위/자식 생성) unless the request explicitly says it is a
+              sub-detail of one specific existing task.
+            - If the request makes an existing task redundant or duplicated, use REMOVE (taskId).
+            - Never restate existing content as a new child. Merge overlaps instead of nesting.
+
+            OUTPUT:
+            - Output ONLY one compact JSON object, no markdown, no comments, no explanation.
+            - EXACTLY ONE key "changes": an array of all edits. Never output "changes" more than once.
+            - Each edit: {"type":"ADD|UPDATE|REMOVE","taskId":int?,"parentTaskId":int?,"title":str,"before":str?,"after":str?,"description":str?}.
+            - Use taskId from CURRENT_TASKS for UPDATE/REMOVE. Keep Korean text in Korean.
+            Example: {"changes":[{"type":"UPDATE","taskId":12,"before":"기본 조회 기간 1개월","after":"기본 조회 기간 3개월"}]}
             """;
 
     /** 최초 MD 분석 → 작업 트리 JSON(raw) */
