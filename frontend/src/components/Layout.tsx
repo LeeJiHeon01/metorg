@@ -14,7 +14,7 @@ export default function Layout() {
         <div className="brand">
           <div className="brand-logo">🗂️</div>
           <div>
-            <div className="brand-name">ChangeFlow</div>
+            <div className="brand-name">프로젝트 작업 관리</div>
             <div className="brand-sub">변경사항 통합 관리</div>
           </div>
         </div>
