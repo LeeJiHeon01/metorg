@@ -10,6 +10,7 @@ import com.mtorg.meeting_organize.repository.TaskRepository;
 import com.mtorg.meeting_organize.web.NotFoundException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,13 +53,25 @@ public class TaskService {
             t.setSortOrder(req.sortOrder());
         }
         t.setDueDate(req.dueDate());
-        return taskRepository.save(t);
+        Task saved = taskRepository.save(t);
+
+        // 수동 작업 추가 → '추가' 이력
+        ChangeHistory h = new ChangeHistory();
+        h.setProjectId(projectId);
+        h.setTaskId(saved.getId());
+        h.setChangeType(ChangeType.ADD);
+        h.setAfterValue(snapshot(saved));
+        changeHistoryRepository.save(h);
+
+        return saved;
     }
 
     @Transactional
     public Task update(Long id, TaskDtos.UpdateRequest req) {
         Task t = get(id);
         TaskStatus oldStatus = t.getStatus();
+        String oldTitle = t.getTitle();
+        String oldDesc = t.getDescription();
 
         t.setParentTaskId(req.parentTaskId());
         t.setTitle(req.title());
@@ -71,6 +84,17 @@ public class TaskService {
             t.setSortOrder(req.sortOrder());
         }
         t.setDueDate(req.dueDate());
+
+        // 제목/세부 내용이 바뀌면 '수정' 이력에 기록 (담당자·마감일·정렬만 바뀐 건 제외)
+        if (!Objects.equals(oldTitle, t.getTitle()) || !Objects.equals(oldDesc, t.getDescription())) {
+            ChangeHistory h = new ChangeHistory();
+            h.setProjectId(t.getProjectId());
+            h.setTaskId(t.getId());
+            h.setChangeType(ChangeType.UPDATE);
+            h.setBeforeValue(snapshot(oldTitle, oldDesc));
+            h.setAfterValue(snapshot(t.getTitle(), t.getDescription()));
+            changeHistoryRepository.save(h);
+        }
 
         // 상태가 '수정필요' 또는 '완료'로 바뀌면 변경이력에 기록
         TaskStatus newStatus = t.getStatus();
@@ -110,9 +134,11 @@ public class TaskService {
     }
 
     private static String snapshot(Task t) {
-        return (t.getDescription() != null && !t.getDescription().isBlank())
-                ? t.getTitle() + " — " + t.getDescription()
-                : t.getTitle();
+        return snapshot(t.getTitle(), t.getDescription());
+    }
+
+    private static String snapshot(String title, String desc) {
+        return (desc != null && !desc.isBlank()) ? title + " — " + desc : title;
     }
 
     /** 여러 작업에 담당자 일괄 지정 (assigneeId=null 이면 담당 해제) */
