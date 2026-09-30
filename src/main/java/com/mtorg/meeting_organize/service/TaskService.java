@@ -87,10 +87,18 @@ public class TaskService {
         return t;
     }
 
-    /** 소프트 삭제 (deleted_yn = 'Y') — 하위 작업까지 재귀적으로 함께 삭제 */
+    /** 소프트 삭제 (deleted_yn = 'Y') — 하위 작업까지 재귀 삭제 + 변경이력에 '제외' 기록 */
     @Transactional
     public void delete(Long id) {
         Task t = get(id);
+        // 삭제 이력 기록 (최상위 삭제 작업 기준)
+        ChangeHistory h = new ChangeHistory();
+        h.setProjectId(t.getProjectId());
+        h.setTaskId(t.getId());
+        h.setChangeType(ChangeType.REMOVE);
+        h.setBeforeValue(snapshot(t));
+        changeHistoryRepository.save(h);
+
         softDeleteRecursive(t);
     }
 
@@ -99,6 +107,12 @@ public class TaskService {
         for (Task child : taskRepository.findByParentTaskIdAndDeletedYn(t.getId(), "N")) {
             softDeleteRecursive(child);
         }
+    }
+
+    private static String snapshot(Task t) {
+        return (t.getDescription() != null && !t.getDescription().isBlank())
+                ? t.getTitle() + " — " + t.getDescription()
+                : t.getTitle();
     }
 
     /** 여러 작업에 담당자 일괄 지정 (assigneeId=null 이면 담당 해제) */
