@@ -84,6 +84,8 @@ export default function ProjectDetailPage() {
   const [memberModal, setMemberModal] = useState(false)
   const [finalConfirm, setFinalConfirm] = useState(false)
   const [finalizing, setFinalizing] = useState(false)
+  const [taskToDelete, setTaskToDelete] = useState<Task | null>(null)
+  const [deletingTask, setDeletingTask] = useState(false)
   const [deleteConfirm, setDeleteConfirm] = useState(false)
   const [deletingProject, setDeletingProject] = useState(false)
   const [editOpen, setEditOpen] = useState(false)
@@ -299,14 +301,18 @@ export default function ProjectDetailPage() {
     }
   }
 
-  async function removeTask(t: Task) {
-    if (!confirm(`'${t.title}' 작업을 삭제할까요? 하위 작업도 함께 삭제됩니다.`)) return
+  async function doRemoveTask() {
+    if (!taskToDelete) return
+    setDeletingTask(true)
     try {
-      await api.deleteTask(t.id)
+      await api.deleteTask(taskToDelete.id)
+      setTaskToDelete(null)
       await reloadTasks()
       toast('작업을 삭제했어요', 'ok')
     } catch (e) {
       toast(e instanceof Error ? e.message : '삭제 실패', 'err')
+    } finally {
+      setDeletingTask(false)
     }
   }
 
@@ -504,7 +510,7 @@ export default function ProjectDetailPage() {
             <button className="icon-btn" title="수정" onClick={() => setTaskModal({ parentTaskId: node.parentTaskId ?? null, editing: node })}>
               ✎
             </button>
-            <button className="icon-btn danger" title="삭제" onClick={() => removeTask(node)}>
+            <button className="icon-btn danger" title="삭제" onClick={() => setTaskToDelete(node)}>
               🗑
             </button>
           </div>
@@ -1020,6 +1026,19 @@ export default function ProjectDetailPage() {
           loading={finalizing}
           onConfirm={doFinalComplete}
           onClose={() => (finalizing ? null : setFinalConfirm(false))}
+        />
+      )}
+      {taskToDelete && (
+        <ConfirmModal
+          icon="🗑"
+          tone="danger"
+          title="작업 삭제"
+          message={`'${taskToDelete.title}' 작업을 삭제할까요?\n하위 작업도 함께 삭제됩니다.`}
+          confirmText="삭제"
+          cancelText="취소"
+          loading={deletingTask}
+          onConfirm={doRemoveTask}
+          onClose={() => (deletingTask ? null : setTaskToDelete(null))}
         />
       )}
       {preview && (
