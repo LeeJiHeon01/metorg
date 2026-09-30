@@ -7,6 +7,7 @@ import com.mtorg.meeting_organize.dto.TaskDtos;
 import com.mtorg.meeting_organize.repository.ChangeHistoryRepository;
 import com.mtorg.meeting_organize.repository.ChangeRequestRepository;
 import com.mtorg.meeting_organize.repository.TaskRepository;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -61,6 +62,7 @@ public class ChangeApplyService {
                         t.setTitle(nonBlank(c.title()) ? c.title() : "(제목 없음)");
                         t.setDescription(c.description() != null ? c.description() : c.after());
                         t.setSortOrder(nextOrder++);
+                        t.setDueDate(LocalDate.now().plusDays(7)); // 마감일 기본값 = 1주일 뒤
                         Task saved = taskRepository.save(t);
                         histories.add(saveHistory(projectId, saved.getId(), cr.getId(),
                                 null, snapshot(saved), ChangeType.ADD));
