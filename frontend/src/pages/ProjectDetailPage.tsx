@@ -840,7 +840,7 @@ export default function ProjectDetailPage() {
                       {u.name}
                     </option>
                   ))}
-                  <option value="none">담당자 없음</option>
+                  <option value="none">관리자</option>
                 </select>
                 {/* 검색어 */}
                 <input
@@ -877,8 +877,7 @@ export default function ProjectDetailPage() {
                           {h.taskTitle ?? (h.taskId ? `작업 #${h.taskId}` : '전체 작업')}
                         </span>
                         <span className="muted" style={{ fontSize: 12, fontWeight: 600 }}>
-                          {h.assigneeName ? `담당: ${h.assigneeName} · ` : ''}
-                          {fmtDate(h.createdAt)}
+                          담당: {h.assigneeName ?? '관리자'} · {fmtDate(h.createdAt)}
                         </span>
                       </div>
                       {(h.before || h.after) && (
