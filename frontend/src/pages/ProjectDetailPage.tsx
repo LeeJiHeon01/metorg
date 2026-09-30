@@ -370,12 +370,12 @@ export default function ProjectDetailPage() {
         content: changeText.trim(),
         createdBy: user?.id,
       })
-      toast(`AI가 변경 ${res.appliedCount}건을 반영했어요`, 'ok')
+      toast(`AI가 수정사항 ${res.appliedCount}건을 반영했어요`, 'ok')
       setChangeText('')
       await reloadTasks()
       if (tab === 'history') await reloadHistory()
     } catch (e) {
-      toast(e instanceof Error ? e.message : '변경 분석 실패', 'err')
+      toast(e instanceof Error ? e.message : '수정사항 분석 실패', 'err')
     } finally {
       setSubmitting(false)
     }
@@ -686,7 +686,7 @@ export default function ProjectDetailPage() {
                 <span className="ico">✏️</span> 수정사항 입력
               </div>
               <div className="page-sub" style={{ marginBottom: 14 }}>
-                회의·테스트·고객 요청에서 발생한 변경을 입력하면 AI가 기존 작업과 비교해 반영합니다.
+                회의·테스트·고객 요청에서 발생한 수정사항을 입력하면 AI가 기존 작업과 비교해 반영합니다.
               </div>
               <div className="segmented" style={{ marginBottom: 14 }}>
                 {SOURCES.map((s) => (

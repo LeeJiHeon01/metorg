@@ -42,7 +42,7 @@ function AuthGate() {
       <div className="gate-card">
         <div className="gate-logo">🗂️</div>
         <div className="gate-h">프로젝트 작업 관리</div>
-        <div className="gate-sub">변경사항 통합 관리 시스템</div>
+        <div className="gate-sub">수정사항 통합 관리 시스템</div>
 
         <div className="segmented" style={{ width: '100%', marginBottom: 20 }}>
           <button
