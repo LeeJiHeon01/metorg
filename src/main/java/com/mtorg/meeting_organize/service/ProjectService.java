@@ -71,6 +71,7 @@ public class ProjectService {
         p.setProjectName(req.projectName());
         p.setDescription(req.description());
         p.setCreatedBy(req.createdBy());
+        p.setLogo(req.logo());
         Project saved = projectRepository.save(p);
 
         // 생성자를 담당자로 자동 등록 (가시성 + 담당 지정용). 단, 관리자는 담당자가 아니므로 제외.
@@ -89,6 +90,9 @@ public class ProjectService {
         Project p = get(id);
         p.setProjectName(req.projectName());
         p.setDescription(req.description());
+        if (req.logo() != null) {
+            p.setLogo(req.logo());
+        }
         return p;
     }
 

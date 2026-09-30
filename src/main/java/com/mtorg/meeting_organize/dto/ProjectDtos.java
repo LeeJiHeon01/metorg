@@ -9,17 +9,20 @@ public class ProjectDtos {
     public record CreateRequest(
             @NotBlank String projectName,
             String description,
-            Long createdBy) {}
+            Long createdBy,
+            String logo) {}
 
     public record UpdateRequest(
             @NotBlank String projectName,
-            String description) {}
+            String description,
+            String logo) {}
 
     public record Response(
             Long id,
             String projectName,
             String description,
             Long createdBy,
+            String logo,
             LocalDateTime createdAt,
             LocalDateTime updatedAt) {
 
@@ -29,6 +32,7 @@ public class ProjectDtos {
                     p.getProjectName(),
                     p.getDescription(),
                     p.getCreatedBy(),
+                    p.getLogo(),
                     p.getCreatedAt(),
                     p.getUpdatedAt());
         }

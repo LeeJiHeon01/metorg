@@ -13,6 +13,7 @@ export type Project = {
   projectName: string
   description?: string
   createdBy?: number
+  logo?: string | null
   createdAt: string
   updatedAt: string
 }
@@ -136,9 +137,9 @@ export const api = {
   listProjects: (userId?: number) =>
     http<Project[]>(`/api/projects${userId != null ? `?userId=${userId}` : ''}`),
   getProject: (id: number) => http<Project>(`/api/projects/${id}`),
-  createProject: (data: { projectName: string; description?: string; createdBy?: number }) =>
+  createProject: (data: { projectName: string; description?: string; createdBy?: number; logo?: string | null }) =>
     http<Project>('/api/projects', { method: 'POST', body: JSON.stringify(data) }),
-  updateProject: (id: number, data: { projectName: string; description?: string }) =>
+  updateProject: (id: number, data: { projectName: string; description?: string; logo?: string | null }) =>
     http<Project>(`/api/projects/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   deleteProject: (id: number) => http<void>(`/api/projects/${id}`, { method: 'DELETE' }),
   bulkDeleteProjects: (ids: number[]) =>

@@ -18,7 +18,7 @@ import { useUser, isAdmin } from '../lib/user'
 import { useToast } from '../lib/toast'
 import Modal from '../components/Modal'
 import ConfirmModal from '../components/ConfirmModal'
-import { ChangeBadge, Empty, SourceBadge, fmtDate } from '../components/ui'
+import { ChangeBadge, Empty, SourceBadge, fmtDate, fileToDataUrl } from '../components/ui'
 
 type TaskNode = Task & { children: TaskNode[] }
 
@@ -89,6 +89,7 @@ export default function ProjectDetailPage() {
   const [editOpen, setEditOpen] = useState(false)
   const [editName, setEditName] = useState('')
   const [editDesc, setEditDesc] = useState('')
+  const [editLogo, setEditLogo] = useState<string | null>(null)
   const [savingEdit, setSavingEdit] = useState(false)
   const [selected, setSelected] = useState<Set<number>>(new Set())
   const [bulkAssignee, setBulkAssignee] = useState('') // '' 미선택, 'none' 해제, 그 외 userId
@@ -186,6 +187,7 @@ export default function ProjectDetailPage() {
   function openEdit() {
     setEditName(project?.projectName ?? '')
     setEditDesc(project?.description ?? '')
+    setEditLogo(project?.logo ?? null)
     setEditOpen(true)
   }
   async function saveEdit() {
@@ -195,6 +197,7 @@ export default function ProjectDetailPage() {
       const p = await api.updateProject(projectId, {
         projectName: editName.trim(),
         description: editDesc.trim() || undefined,
+        logo: editLogo,
       })
       setProject(p)
       setEditOpen(false)
@@ -518,7 +521,10 @@ export default function ProjectDetailPage() {
           <button className="crumb" onClick={() => navigate('/')}>
             ← 프로젝트
           </button>
-          <div className="page-title">{project?.projectName}</div>
+          <div className="page-title row" style={{ gap: 10 }}>
+            {project?.logo && <img className="pd-logo" src={project.logo} alt="" />}
+            {project?.projectName}
+          </div>
           {project?.description && <div className="page-sub">{project.description}</div>}
         </div>
         <div className="row" style={{ gap: 8 }}>
@@ -661,7 +667,7 @@ export default function ProjectDetailPage() {
                   <>
                     <div className="dz-icon">📄</div>
                     <div className="dz-title">회의 MD 또는 TXT 파일을 올려주세요.</div>
-                    <div className="dz-sub">클릭 또는 드래그 · AI가 작업 목록을 자동 생성합니다</div>
+                    <div className="dz-sub">클릭 또는 드래그 · AI가 작업 목록을 자동 생성합니다.</div>
                   </>
                 )}
                 <input
@@ -931,9 +937,44 @@ export default function ProjectDetailPage() {
               onKeyDown={(e) => e.key === 'Enter' && saveEdit()}
             />
           </div>
-          <div className="field" style={{ marginBottom: 0 }}>
+          <div className="field">
             <label className="label">설명 (선택)</label>
             <textarea className="textarea" value={editDesc} onChange={(e) => setEditDesc(e.target.value)} />
+          </div>
+          <div className="field" style={{ marginBottom: 0 }}>
+            <label className="label">로고 (선택)</label>
+            <div className="row" style={{ gap: 12 }}>
+              {editLogo ? (
+                <img className="logo-preview" src={editLogo} alt="" />
+              ) : (
+                <div className="logo-preview empty">🗂️</div>
+              )}
+              <div className="row" style={{ gap: 8 }}>
+                <label className="btn btn-soft btn-sm" style={{ cursor: 'pointer' }}>
+                  이미지 선택
+                  <input
+                    type="file"
+                    accept="image/*"
+                    hidden
+                    onChange={async (e) => {
+                      const f = e.target.files?.[0]
+                      e.target.value = ''
+                      if (!f) return
+                      try {
+                        setEditLogo(await fileToDataUrl(f))
+                      } catch (err) {
+                        toast(err instanceof Error ? err.message : '이미지 오류', 'err')
+                      }
+                    }}
+                  />
+                </label>
+                {editLogo && (
+                  <button className="btn btn-soft btn-sm" onClick={() => setEditLogo(null)}>
+                    제거
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
         </Modal>
       )}

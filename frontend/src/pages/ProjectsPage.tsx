@@ -5,7 +5,7 @@ import { useUser, isAdmin } from '../lib/user'
 import { useToast } from '../lib/toast'
 import Modal from '../components/Modal'
 import ConfirmModal from '../components/ConfirmModal'
-import { Empty, fmtDate } from '../components/ui'
+import { Empty, fmtDate, fileToDataUrl } from '../components/ui'
 
 const ICONS = ['🚀', '📦', '🎯', '🛠️', '💡', '📊', '🧩', '🌱']
 const iconFor = (id: number) => ICONS[id % ICONS.length]
@@ -21,6 +21,7 @@ export default function ProjectsPage() {
   const [showCreate, setShowCreate] = useState(false)
   const [name, setName] = useState('')
   const [desc, setDesc] = useState('')
+  const [logo, setLogo] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [selected, setSelected] = useState<Set<number>>(new Set())
   const [confirmDelete, setConfirmDelete] = useState(false)
@@ -80,11 +81,13 @@ export default function ProjectsPage() {
         projectName: name.trim(),
         description: desc.trim() || undefined,
         createdBy: user?.id,
+        logo,
       })
       toast('프로젝트를 생성했어요', 'ok')
       setShowCreate(false)
       setName('')
       setDesc('')
+      setLogo(null)
       navigate(`/projects/${p.id}`)
     } catch (e) {
       toast(e instanceof Error ? e.message : '생성 실패', 'err')
@@ -166,7 +169,11 @@ export default function ProjectsPage() {
                       onChange={() => toggleSelect(p.id)}
                     />
                   )}
-                  <div className="pc-icon">{iconFor(p.id)}</div>
+                  {p.logo ? (
+                    <img className="pc-logo" src={p.logo} alt="" />
+                  ) : (
+                    <div className="pc-icon">{iconFor(p.id)}</div>
+                  )}
                   <div className="pc-name">{p.projectName}</div>
                   <div className="pc-desc">{p.description || '설명이 없습니다'}</div>
                   <div className="pc-meta">
@@ -222,7 +229,7 @@ export default function ProjectsPage() {
               placeholder="예: 회원 관리 시스템 개편"
             />
           </div>
-          <div className="field" style={{ marginBottom: 0 }}>
+          <div className="field">
             <label className="label">설명 (선택)</label>
             <textarea
               className="textarea"
@@ -230,6 +237,41 @@ export default function ProjectsPage() {
               onChange={(e) => setDesc(e.target.value)}
               placeholder="프로젝트에 대한 간단한 설명"
             />
+          </div>
+          <div className="field" style={{ marginBottom: 0 }}>
+            <label className="label">로고 (선택)</label>
+            <div className="row" style={{ gap: 12 }}>
+              {logo ? (
+                <img className="logo-preview" src={logo} alt="" />
+              ) : (
+                <div className="logo-preview empty">🗂️</div>
+              )}
+              <div className="row" style={{ gap: 8 }}>
+                <label className="btn btn-soft btn-sm" style={{ cursor: 'pointer' }}>
+                  이미지 선택
+                  <input
+                    type="file"
+                    accept="image/*"
+                    hidden
+                    onChange={async (e) => {
+                      const f = e.target.files?.[0]
+                      e.target.value = ''
+                      if (!f) return
+                      try {
+                        setLogo(await fileToDataUrl(f))
+                      } catch (err) {
+                        toast(err instanceof Error ? err.message : '이미지 오류', 'err')
+                      }
+                    }}
+                  />
+                </label>
+                {logo && (
+                  <button className="btn btn-soft btn-sm" onClick={() => setLogo(null)}>
+                    제거
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
         </Modal>
       )}

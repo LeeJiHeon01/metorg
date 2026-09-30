@@ -38,6 +38,10 @@ public class Project {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    /** 프로젝트 로고 (data URL base64). 없으면 null */
+    @Column(name = "logo", length = 10_000_000)
+    private String logo;
+
     /** 소프트 삭제 여부 (Y/N) */
     @Column(name = "deleted_yn", nullable = false, length = 1)
     private String deletedYn = "N";

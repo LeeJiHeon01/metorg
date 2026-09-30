@@ -32,6 +32,24 @@ export function Empty({ icon, title, sub }: { icon: string; title: string; sub?:
   )
 }
 
+/** 이미지 파일을 data URL(base64)로 읽음. 5MB 초과 시 에러 */
+export function fileToDataUrl(file: File, maxBytes = 5 * 1024 * 1024): Promise<string> {
+  return new Promise((resolve, reject) => {
+    if (!file.type.startsWith('image/')) {
+      reject(new Error('이미지 파일만 등록할 수 있어요'))
+      return
+    }
+    if (file.size > maxBytes) {
+      reject(new Error('이미지는 5MB 이하만 가능해요'))
+      return
+    }
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result as string)
+    reader.onerror = () => reject(new Error('이미지 읽기 실패'))
+    reader.readAsDataURL(file)
+  })
+}
+
 export function fmtDate(iso?: string) {
   if (!iso) return ''
   const d = new Date(iso)
