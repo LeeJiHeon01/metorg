@@ -3,6 +3,7 @@ package com.mtorg.meeting_organize.service;
 import com.mtorg.meeting_organize.ai.AiDtos;
 import com.mtorg.meeting_organize.domain.Task;
 import com.mtorg.meeting_organize.repository.TaskRepository;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -45,6 +46,7 @@ public class TaskImportService {
         t.setTitle(node.title() != null && !node.title().isBlank() ? node.title() : "(제목 없음)");
         t.setDescription(node.description());
         t.setSortOrder(order[0]++);
+        t.setDueDate(LocalDate.now().plusDays(7)); // 등록 기준 마감일 기본값 = 1주일 뒤
         Task saved = taskRepository.save(t);
         created.add(saved);
 
