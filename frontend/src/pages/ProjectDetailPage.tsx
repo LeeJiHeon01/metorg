@@ -584,14 +584,12 @@ export default function ProjectDetailPage() {
                     <div className="stat-num">{total}</div>
                     <div className="stat-label">전체 작업</div>
                   </div>
-                  <div className="stat">
-                    <div className="stat-num" style={{ color: '#059669' }}>{doneCount}</div>
-                    <div className="stat-label">진행완료</div>
-                  </div>
-                  <div className="stat">
-                    <div className="stat-num" style={{ color: '#2563eb' }}>{statusCounts.IN_PROGRESS}</div>
-                    <div className="stat-label">진행중</div>
-                  </div>
+                  {STATUSES.map((s) => (
+                    <div className="stat" key={s}>
+                      <div className="stat-num" style={{ color: STATUS_COLOR[s] }}>{statusCounts[s]}</div>
+                      <div className="stat-label">{STATUS_LABEL[s]}</div>
+                    </div>
+                  ))}
                   <div className="stat">
                     <div className="stat-num" style={{ color: overdueCount ? '#e11d48' : 'var(--text)' }}>{overdueCount}</div>
                     <div className="stat-label">마감 지남</div>
