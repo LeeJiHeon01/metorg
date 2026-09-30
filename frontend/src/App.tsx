@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, useNavigate } from 'react-router-dom'
 import { api } from './api'
 import { useUser } from './lib/user'
 import { useToast } from './lib/toast'
@@ -10,6 +10,7 @@ import AdminUsersPage from './pages/AdminUsersPage'
 
 function AuthGate() {
   const { setUser } = useUser()
+  const navigate = useNavigate()
   const toast = useToast()
   const [mode, setMode] = useState<'login' | 'signup'>('login')
   const [username, setUsername] = useState('')
@@ -29,6 +30,7 @@ function AuthGate() {
         mode === 'login'
           ? await api.login(username.trim(), password)
           : await api.signup(username.trim(), password, name.trim())
+      navigate('/')
       setUser({ id: u.id, username: u.username ?? undefined, name: u.name, role: u.role ?? 'USER' })
     } catch (e) {
       toast(e instanceof Error ? e.message : '실패했어요', 'err')

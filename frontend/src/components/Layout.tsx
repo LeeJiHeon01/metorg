@@ -1,12 +1,18 @@
 import { useState } from 'react'
-import { NavLink, Outlet } from 'react-router-dom'
+import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useUser, isAdmin } from '../lib/user'
 import { Avatar } from './ui'
 import AccountModal from './AccountModal'
 
 export default function Layout() {
   const { user, setUser } = useUser()
+  const navigate = useNavigate()
   const [accountOpen, setAccountOpen] = useState(false)
+
+  function logout() {
+    navigate('/')
+    setUser(null)
+  }
 
   return (
     <div className="app-shell">
@@ -43,7 +49,7 @@ export default function Layout() {
                 <button className="u-act" onClick={() => setAccountOpen(true)}>
                   계정 설정
                 </button>
-                <button className="u-act" onClick={() => setUser(null)}>
+                <button className="u-act" onClick={logout}>
                   로그아웃
                 </button>
               </div>
