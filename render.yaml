@@ -1,0 +1,41 @@
+# Render Blueprint — 웹서비스(Docker) + PostgreSQL 자동 생성/연결
+# Render 에서 "New +" → "Blueprint" → 이 저장소 선택하면 아래 구성대로 만들어집니다.
+databases:
+  - name: metorg-db
+    plan: free
+
+services:
+  - type: web
+    name: metorg
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/projects
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: DB_HOST
+        fromDatabase:
+          name: metorg-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: metorg-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: metorg-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: metorg-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: metorg-db
+          property: password
+      # OpenAI 키는 보안상 대시보드에서 직접 입력 (아래는 자리만 확보)
+      - key: OPENAI_API_KEY
+        sync: false
+      # 관리자 기본 비밀번호(선택) — 미설정 시 rhdxhd12
+      - key: ADMIN_PASSWORD
+        sync: false
