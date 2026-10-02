@@ -84,23 +84,27 @@ public class ChangeController {
         return changeHistoryRepository.findByProjectIdOrderByCreatedAtDesc(projectId).stream()
                 .map(h -> {
                     String taskTitle = null;
-                    String assigneeName = null;
                     if (h.getTaskId() != null) {
                         Task t = taskRepository.findById(h.getTaskId()).orElse(null);
                         if (t != null) {
                             taskTitle = t.getTitle();
-                            if (t.getAssigneeId() != null) {
-                                assigneeName = userRepository.findById(t.getAssigneeId())
+                        }
+                    }
+                    // 이력의 "담당"은 작업의 현재 담당자가 아니라, 이 수정사항을 등록한 로그인 계정으로 고정한다.
+                    // (담당자가 나중에 바뀌어도 이력에 기록된 등록자는 유지)
+                    String registrantName = null;
+                    com.mtorg.meeting_organize.domain.SourceType sourceType = null;
+                    if (h.getChangeId() != null) {
+                        var cr = changeRequestRepository.findById(h.getChangeId()).orElse(null);
+                        if (cr != null) {
+                            sourceType = cr.getSourceType();
+                            if (cr.getCreatedBy() != null) {
+                                registrantName = userRepository.findById(cr.getCreatedBy())
                                         .map(u -> u.getName()).orElse(null);
                             }
                         }
                     }
-                    com.mtorg.meeting_organize.domain.SourceType sourceType = null;
-                    if (h.getChangeId() != null) {
-                        sourceType = changeRequestRepository.findById(h.getChangeId())
-                                .map(cr -> cr.getSourceType()).orElse(null);
-                    }
-                    return ChangeDtos.HistoryResponse.from(h, taskTitle, assigneeName, sourceType);
+                    return ChangeDtos.HistoryResponse.from(h, taskTitle, registrantName, sourceType);
                 })
                 .toList();
     }

@@ -19,5 +19,7 @@ FROM eclipse-temurin:17-jre
 WORKDIR /app
 COPY --from=backend /app/build/libs/*.war app.war
 EXPOSE 8080
+# 시각(@CreationTimestamp·로그)을 KST 기준으로 통일
+ENV TZ=Asia/Seoul
 # Render 가 주입하는 PORT 로 바인딩 (없으면 8080)
-CMD ["sh", "-c", "java -jar app.war --server.port=${PORT:-8080}"]
+CMD ["sh", "-c", "java -Duser.timezone=Asia/Seoul -jar app.war --server.port=${PORT:-8080}"]
